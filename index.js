@@ -40,6 +40,11 @@ async function run() {
         const result = await cursor.toArray();
         res.send(result);
     })
+    app.post('/allBooks', async(req, res)=>{
+        const data = req.body;
+        const result = await bookCollection.insertOne(data);
+        res.send(result);
+    })
 
   } finally {
     // Ensures that the client will close when you finish/error
