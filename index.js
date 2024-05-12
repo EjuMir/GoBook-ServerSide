@@ -69,6 +69,16 @@ async function run() {
       res.send(add);
     })
 
+    app.get('/borrowedBooks', async(req, res)=>{
+      let query = {}
+      console.log(req.query); 
+       if(req.query?.email){
+        query = {email: req.query.email};
+       }
+       const find = await borrowedBooks.find(query).toArray();
+       res.send(find);
+    })
+
 
 
     //Category section
