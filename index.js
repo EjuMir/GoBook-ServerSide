@@ -26,6 +26,7 @@ async function run() {
     // Send a ping to confirm a successful connection
     // await client.db("admin").command({ ping: 1 }); 
     const bookCollection = client.db('GoBook').collection('BookCollection');
+    const category = client.db('GoBook').collection('Category');
 
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
 
@@ -46,6 +47,12 @@ async function run() {
         const query = {category : id};
         const result = await bookCollection.find(query).toArray();
         res.send(result);
+    })
+    //Category section
+    app.get('/category', async(req, res)=>{
+      const cursor = category.find();
+      const result = await cursor.toArray();
+      res.send(result);
     })
 
   } finally {
