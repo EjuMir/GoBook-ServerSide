@@ -81,7 +81,18 @@ async function run() {
     )
       res.send(modify);
     })
-
+   
+    // return books 
+    app.put('/allBooks', async(req, res)=>{
+      const data = req.body;
+      const modify = await bookCollection.updateOne({
+        name : data.name
+      },{
+        $inc:{quantity : 1}
+      }
+    )
+    res.send(modify);
+    })
     
 
     app.get('/borrowedBooks', async (req, res) => {
@@ -93,20 +104,7 @@ async function run() {
       const find = await borrowedBooks.find(query).toArray();
       res.send(find);
     })
-
-    //put operation on quantity
-    app.put('/allBooks', async (req, res) => {
-      const datas = req.body;
-      const options = { upsert: true };
-      const filter = {name : datas.name}
-      const updateDoc = {
-        $set: {
-           quantity : amount.newQuantity
-        },
-      };
-      const result = await bookCollection.updateOne(filter, updateDoc, options)
-      console.log(result);
-    })
+   
 
 
     //Category section
