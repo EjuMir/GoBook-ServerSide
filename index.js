@@ -94,6 +94,15 @@ async function run() {
     res.send(modify);
     })
     
+    //delete from borrowed books 
+    app.delete('/borrowedBooks/:id', async(req, res)=>{
+      const id = req.params.id;
+      const query = {_id : new ObjectId(id)};
+      const result = await borrowedBooks.deleteOne(query);
+      res.send(result)
+    })
+    
+
 
     app.get('/borrowedBooks', async (req, res) => {
       let query = {}
