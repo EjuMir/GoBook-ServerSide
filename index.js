@@ -105,8 +105,7 @@ async function run() {
 
 
     app.get('/borrowedBooks', async (req, res) => {
-      let query = {}
-      console.log(req.query);
+      let query = {};
       if (req.query?.email) {
         query = { email: req.query.email };
       }
