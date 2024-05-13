@@ -1,10 +1,15 @@
 const express = require('express');
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 5000;
 
-app.use(cors())
+app.use(cors({
+  origin:["https://localhost:5173"],
+  credentials: true
+}))
+
 app.use(express.json())
 
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
@@ -31,6 +36,24 @@ async function run() {
 
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
 
+    //token login
+    app.post('/token', async (req, res) => {
+      const user = req.body;
+      console.log('token for user', user);
+      const token = jwt.sign(user, process.env.TOKEN_SECRET, {expiresIn: '1h'})
+      
+      res.cookie('token', token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'none'
+      } )
+      .send({success: true});
+    })
+
+    //token logout
+    
+    
+    //all books in the collection
     app.get('/allBooks', async (req, res) => {
       const cursor = bookCollection.find();
       const result = await cursor.toArray();
@@ -90,7 +113,6 @@ async function run() {
           }
          }
          const result = await bookCollection.updateOne(query, updateBook, options);
-         console.log(result);
          res.send(result);
     })
 
