@@ -75,7 +75,24 @@ async function run() {
       res.send(result)
     })
 
-
+    app.put('/allBooks/:id', async (req, res) => {
+         const id = req.params.id;
+         const query = { _id: new ObjectId(id) };
+         const options = {upsert: true };
+         updateInfo = req.body
+         const updateBook = {
+          $set: {
+            name: updateInfo.name,  
+            image: updateInfo.image,
+            author: updateInfo.author,
+            rating: updateInfo.rating,
+            category: updateInfo.category
+          }
+         }
+         const result = await bookCollection.updateOne(query, updateBook, options);
+         console.log(result);
+         res.send(result);
+    })
 
     //borrowed books route
     app.post('/borrowedBooks', async (req, res) => {
