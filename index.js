@@ -61,14 +61,30 @@ async function run() {
       const result = await bookCollection.findOne(query);
       res.send(result)
     })
+    //update Page
+    app.get('/updatePage', async (req, res) => {
+      const find = bookCollection.find();
+      const result = await find.toArray();
+      res.send(result);
+    })
 
+    app.get('/updatePage/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await bookCollection.findOne(query);
+      res.send(result)
+    })
+
+
+
+    //borrowed books route
     app.post('/borrowedBooks', async (req, res) => {
       const book = req.body;
       const result = await borrowedBooks.insertOne(book);
       res.send(result);
     })
 
-    //borrowed books route
+  
     app.put('/borrowedBooks', async (req, res) => {
       const book = req.body;
       const modify = await bookCollection.updateOne({
