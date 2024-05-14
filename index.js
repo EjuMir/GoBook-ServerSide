@@ -7,7 +7,7 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 app.use(cors({
-  origin:["https://localhost:5173"],
+  origin: ["https://gobook-e3647.firebaseapp.com", "https://gobook-e3647.firebaseapp.com", "https://localhost:5173"],
   credentials: true
 }));
 app.use(cookieParser());
@@ -58,23 +58,23 @@ async function run() {
     app.post('/token', async (req, res) => {
       const user = req.body;
       console.log('token for user', user);
-      const token = jwt.sign(user, process.env.TOKEN_SECRET, {expiresIn: '1h'})
-      
+      const token = jwt.sign(user, process.env.TOKEN_SECRET, { expiresIn: '1h' })
+
       res.cookie('token', token, {
         httpOnly: true,
-        secure: true,
-        sameSite: 'none'
-      } )
-      .send({success: true});
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      })
+        .send({ success: true });
     })
 
     //token logout
-    app.post('/logout', async(req, res)=>{
+    app.post('/logout', async (req, res) => {
       const user = req.body;
       console.log(user);
-      res.clearCookie('token', {maxAge: 0}).send({success:true});
+      res.clearCookie('token', { maxAge: 0 }).send({ success: true });
     })
-    
+
     //all books in the collection
     app.get('/allBooks', async (req, res) => {
       const cursor = bookCollection.find();
@@ -83,7 +83,7 @@ async function run() {
     })
 
     app.post('/allBooks', async (req, res) => {
-     console.log('token owner', req.user);
+      console.log('token owner', req.user);
       const data = req.body;
       const result = await bookCollection.insertOne(data);
       res.send(result);
@@ -122,21 +122,21 @@ async function run() {
     })
 
     app.put('/allBooks/:id', async (req, res) => {
-         const id = req.params.id;
-         const query = { _id: new ObjectId(id) };
-         const options = {upsert: true };
-         updateInfo = req.body
-         const updateBook = {
-          $set: {
-            name: updateInfo.name,  
-            image: updateInfo.image,
-            author: updateInfo.author,
-            rating: updateInfo.rating,
-            category: updateInfo.category
-          }
-         }
-         const result = await bookCollection.updateOne(query, updateBook, options);
-         res.send(result);
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      updateInfo = req.body
+      const updateBook = {
+        $set: {
+          name: updateInfo.name,
+          image: updateInfo.image,
+          author: updateInfo.author,
+          rating: updateInfo.rating,
+          category: updateInfo.category
+        }
+      }
+      const result = await bookCollection.updateOne(query, updateBook, options);
+      res.send(result);
     })
 
     //borrowed books route
@@ -146,40 +146,40 @@ async function run() {
       res.send(result);
     })
 
-  
+
     app.put('/borrowedBooks', async (req, res) => {
       const book = req.body;
       const modify = await bookCollection.updateOne({
-        name : book.name
-      },{
-        $inc : {
-          quantity : -1
-        } 
+        name: book.name
+      }, {
+        $inc: {
+          quantity: -1
+        }
       }
-    )
+      )
       res.send(modify);
     })
-   
+
     // return books 
-    app.put('/allBooks', async(req, res)=>{
+    app.put('/allBooks', async (req, res) => {
       const data = req.body;
       const modify = await bookCollection.updateOne({
-        name : data.name
-      },{
-        $inc:{quantity : 1}
+        name: data.name
+      }, {
+        $inc: { quantity: 1 }
       }
-    )
-    res.send(modify);
+      )
+      res.send(modify);
     })
-    
+
     //delete from borrowed books 
-    app.delete('/borrowedBooks/:id', async(req, res)=>{
+    app.delete('/borrowedBooks/:id', async (req, res) => {
       const id = req.params.id;
-      const query = {_id : new ObjectId(id)};
+      const query = { _id: new ObjectId(id) };
       const result = await borrowedBooks.deleteOne(query);
       res.send(result)
     })
-    
+
 
 
     app.get('/borrowedBooks', async (req, res) => {
@@ -190,7 +190,7 @@ async function run() {
       const find = await borrowedBooks.find(query).toArray();
       res.send(find);
     })
-   
+
 
 
     //Category section
