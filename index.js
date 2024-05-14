@@ -82,7 +82,7 @@ async function run() {
       res.send(result);
     })
 
-    app.post('/allBooks', verifyUser, async (req, res) => {
+    app.post('/allBooks', async (req, res) => {
      console.log('token owner', req.user);
       const data = req.body;
       const result = await bookCollection.insertOne(data);
